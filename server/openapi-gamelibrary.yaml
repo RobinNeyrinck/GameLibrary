@@ -1,0 +1,340 @@
+openapi: 3.0.3
+info:
+  title: Game Library API - Group 34
+  description: 'API Spec for the game library project for the course "Web Frameworks" for a back-end in Laravel.'
+  version: 0.0.1
+servers:
+  - url: http://localhost:8000/
+    description: Local API
+tags:
+  - name: Games
+  - name: Languages
+  - name: Registration
+paths:
+  /games:
+    get:
+      summary: Returns all games in library
+      description: Returns all games in library
+      operationId: getGames
+      parameters:
+        - in: query
+          name: title
+          schema:
+            type: string
+          description: Filter by title
+          required: false
+        - in: query
+          name: tag
+          schema:
+            type: string
+          description: Filter by tag
+          required: false
+      tags:
+        - Games
+      responses:
+        "200":
+          description: "Got all games"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Game"
+        "404":
+          description: "Could not find endpoint"
+        "500":
+          description: "Unexpected error"
+    post:
+      summary: Add a new game to your library
+      description: Add a new game to your library
+      operationId: addGame
+      tags:
+        - Games
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Game Title"
+                price:
+                  type: integer
+                  example: 10
+                description:
+                  type: string
+                  example: "Game description"
+                rating:
+                  type: integer
+                  example: 8
+                tags:
+                  type: array
+                  items:
+                    type: string
+                    example: "Action"
+      responses:
+        "201":
+          description: "Game added"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Game"
+        "400":
+          description: "Bad request"
+        "500":
+          description: "Unexpected error"
+  /games/{id}:
+    get:
+      summary: Returns a game from your library
+      description: Returns a game from your library
+      operationId: getGame
+      tags:
+        - Games
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the game to return
+      responses:
+        "200":
+          description: "Got game"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Game"
+        "404":
+          description: "Game not found"
+        "500":
+          description: "Unexpected error"
+    put:
+      summary: Update a game from your library
+      description: Update a game from your library
+      operationId: updateGame
+      tags:
+        - Games
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the game to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Game Title"
+                price:
+                  type: integer
+                  example: 10
+                description:
+                  type: string
+                  example: "Game description"
+                rating:
+                  type: integer
+                  example: 8
+                tags:
+                  type: array
+                  items:
+                    type: string
+                    example: "Action"
+      responses:
+        "200":
+          description: "Game updated"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Game"
+        "400":
+          description: "Bad request"
+        "404":
+          description: "Game not found"
+        "500":
+          description: "Unexpected error"
+    delete:
+      summary: Delete a game from your library
+      description: Delete a game from your library
+      operationId: deleteGame
+      tags:
+        - Games
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the game to delete
+      responses:
+        "204":
+          description: "Game deleted"
+        "404":
+          description: "Game not found"
+        "500":
+          description: "Unexpected error"
+  /languages:
+    get:
+      summary: Returns all languages
+      description: Returns all languages
+      operationId: getLanguage
+      tags:
+        - Languages
+      parameters:
+        - in: query
+          name: language
+          schema:
+            type: string
+          description: Filter by language
+          required: false
+      responses:
+        "200":
+          description: "Got all languages"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/GameLanguage"
+        "404":
+          description: "Could not find endpoint"
+        "500":
+          description: "Unexpected error"
+  /login:
+    post:
+      summary: Login
+      description: Login
+      operationId: login
+      tags:
+        - Registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: ""
+                password:
+                  type: string
+                  example: ""
+      responses:
+        "200":
+          description: "Login successful"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: ""
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Unexpected error"
+  /register:
+    post:
+      summary: Register
+      description: Register
+      operationId: register
+      tags:
+        - Registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: ""
+                email:
+                  type: string
+                  example: ""
+                password:
+                  type: string
+                  example: ""
+      responses:
+        "201":
+          description: "Registration successful"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/RegisterResponse"
+        "400":
+          description: "Bad request"
+        "500":
+          description: "Unexpected error"
+
+components:
+  schemas:
+    Game:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of the game
+        title:
+          type: string
+          description: Title of the game
+        rating:
+          type: integer
+          description: Rating of the game
+        price:
+          type: number
+          description: Price of the game
+        languages:
+          type: array
+          items:
+            $ref: "#/components/schemas/GameLanguage"
+    GameLanguage:
+      type: object
+      properties:
+        language_id:
+          type: integer
+          description: ID of the language
+        game_id:
+          type: integer
+          description: ID of the game
+        language:
+          type: string
+          description: Language code
+        description:
+          type: string
+          description: Description of the game in the specified language
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the game in the specified language
+    RegisterResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Message
+        user:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of the user
+            email:
+              type: string
+              description: Email of the user
